@@ -19,4 +19,6 @@ export class DefuturesService {
   }
 
   async createPosition(chainId: number, { txHash }: { txHash: string }) {}
+
+  async getPositions(chainId: number, address: string) {}
 }

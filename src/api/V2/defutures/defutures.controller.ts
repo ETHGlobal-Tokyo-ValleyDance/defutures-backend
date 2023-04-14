@@ -20,6 +20,7 @@ import { TxHashPayload } from "../../../common/payload/txHash.payload";
 export class DefuturesController {
   constructor(private readonly defuturesService: DefuturesService) {}
 
+  /********************POSITION CONTROLLER *************************************/
   @Post(":chainId/position")
   @ApiOperation({ summary: "Create a new position" })
   @ApiCreatedResponse({
@@ -34,4 +35,20 @@ export class DefuturesController {
   ) {
     return await this.defuturesService.createPosition(chainId, txHashPayload);
   }
+
+  @Get(":chainId/position/:address")
+  @ApiOperation({ summary: "Get all positions for an address" })
+  @ApiCreatedResponse({
+    description: "The position has been successfully created.",
+  })
+  @ApiBadRequestResponse({ description: "Bad request." })
+  @ApiUnauthorizedResponse({ description: "Unauthorized." })
+  @ApiInternalServerErrorResponse({ description: "Internal server error." })
+  async getPositions(
+    @Param("chainId", ParseIntPipe) chainId: number,
+    @Param("address") address: string
+  ) {
+    return await this.defuturesService.getPositions(chainId, address);
+  }
+  /********************POSITION CONTROLLER *************************************/
 }
