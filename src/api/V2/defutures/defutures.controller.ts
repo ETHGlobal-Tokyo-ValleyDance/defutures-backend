@@ -46,12 +46,12 @@ export class DefuturesController {
   @ApiBadRequestResponse({ description: "Bad request." })
   @ApiUnauthorizedResponse({ description: "Unauthorized." })
   @ApiInternalServerErrorResponse({ description: "Internal server error." })
-  async getPositions(
-    @Param("chainId", ParseIntPipe) chainId: number,
-    @Param("address") address: string
-  ): Promise<PositionsDto> {
-    return await this.defuturesService.getPositions(chainId, address);
-  }
+  //   async getPositions(
+  //     @Param("chainId", ParseIntPipe) chainId: number,
+  //     @Param("address") address: string
+  //   ): Promise<PositionsDto> {
+  //     return await this.defuturesService.getPositions(chainId, address);
+  //   }
   /********************POSITION CONTROLLER *************************************/
   /********************MARGIN CONTROLLER *************************************/
   @Post(":chainId/margin")
