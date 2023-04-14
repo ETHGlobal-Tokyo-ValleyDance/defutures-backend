@@ -65,3 +65,101 @@ model Pair {
 
   @@unique([address, chainId])
 }
+
+model DefuturePair {
+  id      String @id @default(cuid()) @map("_id") @db.ObjectId
+  address String
+
+  token0Id String @db.ObjectId
+  token1Id String @db.ObjectId
+
+  token0 Token @relation("defuture_pair_token_0", fields: [token0Id], references: [id])
+  token1 Token @relation("defuture_pair_token_1", fields: [token1Id], references: [id])
+
+  chainId Int
+  chain   Chain @relation(fields: [chainId], references: [chainId])
+
+  positions Position[]
+
+  @@unique([address])
+}
+
+model Position {
+  id        String    @id @default(cuid()) @map("_id") @db.ObjectId
+  createdAt DateTime
+  updatedAt DateTime
+  deletedAt DateTime?
+
+  owner        String
+  positionId   String // tokenId of NFT
+  positionType String // 0: Long, 1: Short
+
+  margin String // margin amount
+  strike String // with 10x -> buy 100y :: x
+  future String // with 10x -> buy 100y :: y
+
+  defuturePair   DefuturePair @relation(fields: [defuturePairId], references: [id])
+  defuturePairId String       @db.ObjectId
+  AddMargin      AddMargin[]
+
+  @@unique([positionId])
+  @@index([owner])
+}
+
+model Swap {
+  id          String   @id @default(cuid()) @map("_id") @db.ObjectId
+  createdAt   DateTime
+  account     String
+  txHash      String
+  blockNumber Int
+  fromTokenId String   @db.ObjectId
+  toTokenId   String   @db.ObjectId
+  fromToken   Token    @relation("swap_from", fields: [fromTokenId], references: [id])
+  toToken     Token    @relation("swap_to", fields: [toTokenId], references: [id])
+  fromAmount  String
+  toAmount    String
+  pairId      String   @db.ObjectId
+  pair        Pair     @relation(fields: [pairId], references: [id])
+
+  @@unique([txHash])
+  @@index([account])
+}
+
+model Liquidity {
+  id          String         @id @default(cuid()) @map("_id") @db.ObjectId
+  createdAt   DateTime
+  txHash      String
+  logIndex    Int
+  blockNumber Int
+  event       LiquidityEvent
+  sender      String // EOA of liquidity transaction
+  receiver    String // receiver of liquidity transaction
+  pairId      String         @db.ObjectId
+  pair        Pair           @relation(fields: [pairId], references: [id])
+  amountLp    String // amount of lp tokens minted/burned
+  amount0     String // amount of token0
+  amount1     String // amount of token1
+
+  @@unique([txHash, logIndex])
+  @@index([sender, receiver, blockNumber])
+}
+
+enum LiquidityEvent {
+  Mint // add liquidity and mint lp token
+  Burn // withdraw liquidity and burn lp token
+}
+
+model AddMargin {
+  id          String   @id @default(cuid()) @map("_id") @db.ObjectId
+  createdAt   DateTime
+  txHash      String
+  blockNumber Int
+
+  from          String
+  positionId    String
+  amount        String
+  currentMargin String
+  position      Position @relation(fields: [positionId], references: [positionId])
+
+  @@unique([txHash])
+}
