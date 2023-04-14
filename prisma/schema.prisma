@@ -10,10 +10,58 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(cuid()) @map("_id") @db.ObjectId
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Chain {
+  id             String         @id @default(cuid()) @map("_id") @db.ObjectId
+  chainId        Int
+  name           String
+  symbol         String
+  rpcUrl         String
+  tokens         Token[]
+  blockTime      Int
+  factoryAddress String
+  routerAddress  String
+  WETHAddress    String
+  pairs          Pair[]
+  DefuturePair   DefuturePair[]
+
+  @@unique([chainId])
+}
+
+model Token {
+  id       String @id @default(cuid()) @map("_id") @db.ObjectId
+  chainId  Int
+  address  String
+  name     String
+  symbol   String
+  decimals Int    @default(18)
+  pair0    Pair[] @relation("pair_token_0")
+  pair1    Pair[] @relation("pair_token_1")
+  swapFrom Swap[] @relation("swap_from")
+  swapTo   Swap[] @relation("swap_to")
+
+  chain         Chain          @relation(fields: [chainId], references: [chainId])
+  DefuturePair0 DefuturePair[] @relation("defuture_pair_token_0")
+  DefuturePair1 DefuturePair[] @relation("defuture_pair_token_1")
+
+  @@unique([chainId, address])
+}
+
+model Pair {
+  id      String @id @default(cuid()) @map("_id") @db.ObjectId
+  address String
+
+  token0Id String @db.ObjectId
+  token1Id String @db.ObjectId
+
+  token0 Token @relation("pair_token_0", fields: [token0Id], references: [id])
+  token1 Token @relation("pair_token_1", fields: [token1Id], references: [id])
+
+  swapEvents Swap[]
+
+  chainId Int
+  chain   Chain @relation(fields: [chainId], references: [chainId])
+
+  Liquidity Liquidity[]
+
+  @@unique([address, chainId])
 }
