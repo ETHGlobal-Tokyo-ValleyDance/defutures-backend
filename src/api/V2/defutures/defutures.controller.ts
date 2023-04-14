@@ -16,6 +16,8 @@ import {
 import { DefuturesService } from "./defutures.service";
 import { TxHashPayload } from "../../../common/payload/txHash.payload";
 
+import { PositionsDto } from "./dto/positions.dto";
+
 @Controller("v2/defutures")
 export class DefuturesController {
   constructor(private readonly defuturesService: DefuturesService) {}
@@ -47,7 +49,7 @@ export class DefuturesController {
   async getPositions(
     @Param("chainId", ParseIntPipe) chainId: number,
     @Param("address") address: string
-  ) {
+  ): Promise<PositionsDto> {
     return await this.defuturesService.getPositions(chainId, address);
   }
   /********************POSITION CONTROLLER *************************************/
