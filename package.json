@@ -20,13 +20,20 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs/cache-manager": "^1.0.0",
     "@nestjs/common": "^9.0.0",
     "@nestjs/core": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
+    "@nestjs/swagger": "^6.3.0",
     "@prisma/client": "^4.12.0",
+    "cache-manager": "^5.2.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.0",
+    "ethers": "^6.3.0",
     "prisma": "^4.12.0",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.2.0"
+    "rxjs": "^7.2.0",
+    "swagger": "^0.7.5"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
