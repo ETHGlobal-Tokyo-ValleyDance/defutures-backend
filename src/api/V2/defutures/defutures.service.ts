@@ -44,4 +44,11 @@ export class DefuturesService {
   async getPositions(chainId: number, address: string): Promise<PositionsDto> {}
 
   async createMargin(chainId: number, { txHash }: { txHash: string }) {}
+
+  async createAddLiquidityHedge(
+    chainId: number,
+    { txHash }: { txHash: string }
+  ) {}
+
+  async createClearPosition(chainId: number, { txHash }: { txHash: string }) {}
 }

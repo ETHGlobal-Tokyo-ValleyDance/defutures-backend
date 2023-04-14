@@ -88,4 +88,23 @@ export class DefuturesController {
     );
   }
   /*****************ADDLIQUIDITYHEDGE CONTROLLER******************************/
+  /*****************CLEARPOSITION CONTROLLER**********************************/
+  @Post(":chainId/clearPosition")
+  @ApiOperation({ summary: "Execute a new clearPosition" })
+  @ApiCreatedResponse({
+    description: "The clearPosition has been successfully executed.",
+  })
+  @ApiBadRequestResponse({ description: "Bad request." })
+  @ApiUnauthorizedResponse({ description: "Unauthorized." })
+  @ApiInternalServerErrorResponse({ description: "Internal server error." })
+  async createClearPosition(
+    @Param("chainId", ParseIntPipe) chainId: number,
+    @Body() txHashPayload: TxHashPayload
+  ) {
+    return await this.defuturesService.createClearPosition(
+      chainId,
+      txHashPayload
+    );
+  }
+  /*****************CLEARPOSITION CONTROLLER**********************************/
 }
