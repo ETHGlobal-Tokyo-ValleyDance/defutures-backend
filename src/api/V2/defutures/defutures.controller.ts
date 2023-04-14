@@ -22,6 +22,12 @@ import { PositionsDto } from "./dto/positions.dto";
 export class DefuturesController {
   constructor(private readonly defuturesService: DefuturesService) {}
 
+  @Post(":chainId/test")
+  @ApiOperation({ summary: "Test" })
+  async test() {
+    return this.defuturesService.testDecodeEventLog();
+  }
+
   /********************POSITION CONTROLLER *************************************/
   @Post(":chainId/position")
   @ApiOperation({ summary: "Create a new position" })
@@ -53,7 +59,7 @@ export class DefuturesController {
     return await this.defuturesService.getPositions(chainId, address);
   }
   /********************POSITION CONTROLLER *************************************/
-  /********************MARGIN CONTROLLER *************************************/
+  /**********************MARGIN CONTROLLER *************************************/
   @Post(":chainId/margin")
   @ApiOperation({ summary: "Create a new margin" })
   @ApiCreatedResponse({

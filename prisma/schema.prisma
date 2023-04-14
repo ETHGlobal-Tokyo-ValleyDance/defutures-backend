@@ -109,7 +109,8 @@ model Position {
 model Swap {
   id          String   @id @default(cuid()) @map("_id") @db.ObjectId
   createdAt   DateTime
-  account     String
+  sender      String
+  receiver    String
   txHash      String
   blockNumber Int
   fromTokenId String   @db.ObjectId
@@ -122,7 +123,7 @@ model Swap {
   pair        Pair     @relation(fields: [pairId], references: [id])
 
   @@unique([txHash])
-  @@index([account])
+  @@index([sender, receiver, blockNumber])
 }
 
 model Liquidity {
