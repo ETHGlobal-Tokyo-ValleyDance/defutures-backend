@@ -1,10 +1,30 @@
 import { Injectable, BadRequestException } from "@nestjs/common";
 import { PrismaService } from "src/common/services/prisma.service";
 import { ethers, providers } from "ethers";
+import { keccak256, toUtf8Bytes } from "ethers/lib/utils";
 
 @Injectable()
 export class DefuturesService {
   constructor(private readonly prismaService: PrismaService) {}
+
+  private readonly TRANSFER_SIGNATURE = keccak256(
+    toUtf8Bytes("Transfer(address,address,uint256)")
+  );
+  private readonly SWAP_SIGNATURE = keccak256(
+    toUtf8Bytes("Swap(address,uint256,uint256,uint256,uint256,address)")
+  );
+  private readonly MINT_SIGNATURE = keccak256(
+    toUtf8Bytes("Mint(address,uint256,uint256)")
+  );
+  private readonly BURN_SIGNATURE = keccak256(
+    toUtf8Bytes("Burn(address,uint256,uint256,address)")
+  );
+  private readonly ADD_MARGIN_SIGNATURE = keccak256(
+    toUtf8Bytes("AddMargin(address,uint256,uint112,uint112)")
+  );
+  private readonly ADD_POSITION_SIGNATURE = keccak256(
+    toUtf8Bytes("AddPosition(address,uint256,uint8,uint112,uint112,uint112)")
+  );
 
   async validateTxHash(
     provider: providers.JsonRpcProvider,
