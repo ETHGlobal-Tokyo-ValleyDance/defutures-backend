@@ -2,6 +2,7 @@ import { Injectable, BadRequestException } from "@nestjs/common";
 import { PrismaService } from "src/common/services/prisma.service";
 import { ethers, providers } from "ethers";
 import { keccak256, toUtf8Bytes } from "ethers/lib/utils";
+import { PositionsDto } from "./dto/positions.dto";
 
 @Injectable()
 export class DefuturesService {
@@ -40,7 +41,7 @@ export class DefuturesService {
 
   async createPosition(chainId: number, { txHash }: { txHash: string }) {}
 
-  async getPositions(chainId: number, address: string) {}
+  async getPositions(chainId: number, address: string): Promise<PositionsDto> {}
 
   async createMargin(chainId: number, { txHash }: { txHash: string }) {}
 }

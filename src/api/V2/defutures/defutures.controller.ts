@@ -69,4 +69,23 @@ export class DefuturesController {
     return await this.defuturesService.createMargin(chainId, txHashPayload);
   }
   /********************MARGIN CONTROLLER *************************************/
+  /*****************ADDLIQUIDITYHEDGE CONTROLLER******************************/
+  @Post(":chainId/addLiquidityHedge")
+  @ApiOperation({ summary: "Create a new addLiquidityHedge" })
+  @ApiCreatedResponse({
+    description: "The addLiquidityHedge has been successfully created.",
+  })
+  @ApiBadRequestResponse({ description: "Bad request." })
+  @ApiUnauthorizedResponse({ description: "Unauthorized." })
+  @ApiInternalServerErrorResponse({ description: "Internal server error." })
+  async createAddLiquidityHedge(
+    @Param("chainId", ParseIntPipe) chainId: number,
+    @Body() txHashPayload: TxHashPayload
+  ) {
+    return await this.defuturesService.createAddLiquidityHedge(
+      chainId,
+      txHashPayload
+    );
+  }
+  /*****************ADDLIQUIDITYHEDGE CONTROLLER******************************/
 }
