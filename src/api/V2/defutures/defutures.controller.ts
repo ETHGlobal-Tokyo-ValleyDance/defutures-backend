@@ -51,4 +51,20 @@ export class DefuturesController {
     return await this.defuturesService.getPositions(chainId, address);
   }
   /********************POSITION CONTROLLER *************************************/
+  /********************MARGIN CONTROLLER *************************************/
+  @Post(":chainId/margin")
+  @ApiOperation({ summary: "Create a new margin" })
+  @ApiCreatedResponse({
+    description: "The margin has been successfully created.",
+  })
+  @ApiBadRequestResponse({ description: "Bad request." })
+  @ApiUnauthorizedResponse({ description: "Unauthorized." })
+  @ApiInternalServerErrorResponse({ description: "Internal server error." })
+  async createMargin(
+    @Param("chainId", ParseIntPipe) chainId: number,
+    @Body() txHashPayload: TxHashPayload
+  ) {
+    return await this.defuturesService.createMargin(chainId, txHashPayload);
+  }
+  /********************MARGIN CONTROLLER *************************************/
 }
