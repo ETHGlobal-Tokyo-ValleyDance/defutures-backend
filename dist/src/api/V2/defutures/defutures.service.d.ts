@@ -22,7 +22,7 @@ export declare class DefuturesService {
     createPosition(chainId: number, { txHash }: {
         txHash: string;
     }): Promise<void>;
-    getPositions(chainId: number, address: string): Promise<PositionsDto>;
+    getPositions(address: string): Promise<PositionsDto>;
     createMargin(chainId: number, { txHash }: {
         txHash: string;
     }): Promise<void>;

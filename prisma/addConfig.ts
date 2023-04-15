@@ -4,9 +4,9 @@ import * as data from "./data.json";
 async function main() {
   const object = {
     chainId: 1,
-    name: "Mumbai", //INPUT
-    symbol: "MUM", //INPUT
-    rpcUrl: "https://rpc-mumbai.maticvigil.com", //INPUT
+    name: "Scroll", //INPUT
+    symbol: "SCR", //INPUT
+    rpcUrl: "https://alpha-rpc.scroll.io/l2", //INPUT
     blockTime: 3, //INPUT
     decimals: 18,
     t1: "0x580A9E9c750841628cb9ba2e217512A9703D8662",

@@ -133,14 +133,11 @@ export class DefuturesService {
     });
   }
 
-  async getPositions(chainId: number, address: string): Promise<PositionsDto> {
+  async getPositions(address: string): Promise<PositionsDto> {
     const positions: PositionDto[] = await this.prismaService.position.findMany(
       {
         where: {
           owner: address,
-          defuturePair: {
-            chainId: chainId,
-          },
         },
       }
     );

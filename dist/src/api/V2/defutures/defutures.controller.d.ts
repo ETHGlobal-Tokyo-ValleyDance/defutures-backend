@@ -6,7 +6,7 @@ export declare class DefuturesController {
     constructor(defuturesService: DefuturesService);
     test(): Promise<number>;
     createPosition(chainId: number, txHashPayload: TxHashPayload): Promise<void>;
-    getPositions(chainId: number, address: string): Promise<PositionsDto>;
+    getPositions(address: string): Promise<PositionsDto>;
     createMargin(chainId: number, txHashPayload: TxHashPayload): Promise<void>;
     createAddLiquidityHedge(chainId: number, txHashPayload: TxHashPayload): Promise<void>;
     createClearPosition(chainId: number, txHashPayload: TxHashPayload): Promise<void>;

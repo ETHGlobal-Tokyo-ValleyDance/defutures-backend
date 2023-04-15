@@ -27,8 +27,8 @@ let DefuturesController = class DefuturesController {
     async createPosition(chainId, txHashPayload) {
         return await this.defuturesService.createPosition(chainId, txHashPayload);
     }
-    async getPositions(chainId, address) {
-        return await this.defuturesService.getPositions(chainId, address);
+    async getPositions(address) {
+        return await this.defuturesService.getPositions(address);
     }
     async createMargin(chainId, txHashPayload) {
         return await this.defuturesService.createMargin(chainId, txHashPayload);
@@ -63,7 +63,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], DefuturesController.prototype, "createPosition", null);
 __decorate([
-    (0, common_1.Get)(":chainId/position/:address"),
+    (0, common_1.Get)("position/:address"),
     (0, swagger_1.ApiOperation)({ summary: "Get all positions for an address" }),
     (0, swagger_1.ApiCreatedResponse)({
         description: "The position has been successfully created.",
@@ -71,10 +71,9 @@ __decorate([
     (0, swagger_1.ApiBadRequestResponse)({ description: "Bad request." }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: "Unauthorized." }),
     (0, swagger_1.ApiInternalServerErrorResponse)({ description: "Internal server error." }),
-    __param(0, (0, common_1.Param)("chainId", common_1.ParseIntPipe)),
-    __param(1, (0, common_1.Param)("address")),
+    __param(0, (0, common_1.Param)("address")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, String]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], DefuturesController.prototype, "getPositions", null);
 __decorate([

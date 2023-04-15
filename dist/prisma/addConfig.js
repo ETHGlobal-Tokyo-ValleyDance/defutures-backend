@@ -5,9 +5,9 @@ const data = require("./data.json");
 async function main() {
     const object = {
         chainId: 1,
-        name: "Mumbai",
-        symbol: "MUM",
-        rpcUrl: "https://rpc-mumbai.maticvigil.com",
+        name: "Scroll",
+        symbol: "SCR",
+        rpcUrl: "https://alpha-rpc.scroll.io/l2",
         blockTime: 3,
         decimals: 18,
         t1: "0x580A9E9c750841628cb9ba2e217512A9703D8662",

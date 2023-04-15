@@ -104,13 +104,10 @@ let DefuturesService = class DefuturesService {
             }
         });
     }
-    async getPositions(chainId, address) {
+    async getPositions(address) {
         const positions = await this.prismaService.position.findMany({
             where: {
                 owner: address,
-                defuturePair: {
-                    chainId: chainId,
-                },
             },
         });
         if (positions.length === 0)
