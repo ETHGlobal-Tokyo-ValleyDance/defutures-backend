@@ -183,7 +183,6 @@ export class DefuturesService {
                   positionId: BigNumber.from(decoded_log.positionId).toString(),
                   defuturePairAddress: log.address,
                 },
-                // positionId: {BigNumber.from(decoded_log.positionId).toString(),}
               },
             },
           },
