@@ -44,20 +44,20 @@ export class DefuturesController {
     return await this.defuturesService.createPosition(chainId, txHashPayload);
   }
 
-  //   @Get(":chainId/position/:address")
-  //   @ApiOperation({ summary: "Get all positions for an address" })
-  //   @ApiCreatedResponse({
-  //     description: "The position has been successfully created.",
-  //   })
-  //   @ApiBadRequestResponse({ description: "Bad request." })
-  //   @ApiUnauthorizedResponse({ description: "Unauthorized." })
-  //   @ApiInternalServerErrorResponse({ description: "Internal server error." })
-  //   async getPositions(
-  //     @Param("chainId", ParseIntPipe) chainId: number,
-  //     @Param("address") address: string
-  //   ): Promise<PositionsDto> {
-  //     return await this.defuturesService.getPositions(chainId, address);
-  //   }
+  @Get(":chainId/position/:address")
+  @ApiOperation({ summary: "Get all positions for an address" })
+  @ApiCreatedResponse({
+    description: "The position has been successfully created.",
+  })
+  @ApiBadRequestResponse({ description: "Bad request." })
+  @ApiUnauthorizedResponse({ description: "Unauthorized." })
+  @ApiInternalServerErrorResponse({ description: "Internal server error." })
+  async getPositions(
+    @Param("chainId", ParseIntPipe) chainId: number,
+    @Param("address") address: string
+  ): Promise<PositionsDto> {
+    return await this.defuturesService.getPositions(chainId, address);
+  }
   /********************POSITION CONTROLLER *************************************/
   /**********************MARGIN CONTROLLER *************************************/
   @Post(":chainId/margin")

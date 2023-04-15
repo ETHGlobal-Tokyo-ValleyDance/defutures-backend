@@ -34,9 +34,13 @@ export class PositionDto {
   @IsString()
   future: string;
 
-  @ApiProperty({ title: "Defuture Pair Id", type: String, example: "0x000" })
+  @ApiProperty({
+    title: "Defuture Pair Address",
+    type: String,
+    example: "0x000",
+  })
   @IsString()
-  defuturePairId: string;
+  defuturePairAddress: string;
 
   static of(info: PositionDto): PositionDto {
     return {
@@ -48,7 +52,7 @@ export class PositionDto {
       margin: info.margin,
       strike: info.strike,
       future: info.future,
-      defuturePairId: info.defuturePairId,
+      defuturePairAddress: info.defuturePairAddress,
     };
   }
 }

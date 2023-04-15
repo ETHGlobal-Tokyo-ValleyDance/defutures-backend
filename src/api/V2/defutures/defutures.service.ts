@@ -175,19 +175,25 @@ export class DefuturesService {
             txHash: txHash,
             blockNumber: receipt.blockNumber,
             from: BigNumber.from(decoded_log.from).toString(),
-            positionId: BigNumber.from(decoded_log.positionId).toString(),
             amount: BigNumber.from(decoded_log.amount).toString(),
             currentMargin: BigNumber.from(decoded_log.currentMargin).toString(),
             position: {
               connect: {
-                positionId: BigNumber.from(decoded_log.positionId).toString(),
+                positionId_defuturePairAddress: {
+                  positionId: BigNumber.from(decoded_log.positionId).toString(),
+                  defuturePairAddress: log.address,
+                },
+                // positionId: {BigNumber.from(decoded_log.positionId).toString(),}
               },
             },
           },
         });
         this.prismaService.position.update({
           where: {
-            positionId: BigNumber.from(decoded_log.positionId).toString(),
+            positionId_defuturePairAddress: {
+              positionId: BigNumber.from(decoded_log.positionId).toString(),
+              defuturePairAddress: log.address,
+            },
           },
           data: {
             margin: BigNumber.from(decoded_log.currentMargin).toString(),
@@ -223,10 +229,11 @@ export class DefuturesService {
       amountLp: "",
       amount0: "",
       amount1: "",
+      pair: {},
     };
     const tmpData = {};
 
-    receipt.logs.map((log) => {
+    receipt.logs.map(async (log) => {
       if (log.topics[0] === this.ADD_POSITION_SIGNATURE) {
         const data = log.data;
         const topics = log.topics;
@@ -235,7 +242,7 @@ export class DefuturesService {
           topics,
         }).args;
         console.log(decoded_log);
-        this.prismaService.position.create({
+        await this.prismaService.position.create({
           data: {
             createdAt: timestamp,
             updatedAt: timestamp,
@@ -273,13 +280,13 @@ export class DefuturesService {
         tmpData["pairAddress"] = log.address;
       }
     });
-    liquidityData["pair"] = {
+    liquidityData.pair = {
       connect: {
         address: tmpData["pairAddress"],
         chainId: chainId,
       },
     };
-    this.prismaService.liquidity.create({
+    await this.prismaService.liquidity.create({
       data: liquidityData,
     });
   }
@@ -302,9 +309,15 @@ export class DefuturesService {
       sender: receipt.from,
       event: LiquidityEvent.BURN,
       blockNumber: receipt.blockNumber,
+      receiver: "",
+      amountLp: "",
+      amount0: "",
+      amount1: "",
     };
-
-    receipt.logs.map((log) => {
+    const tmpData = {
+      pairAddress: "",
+    };
+    receipt.logs.map(async (log) => {
       if (log.topics[0] === this.CLOSE_POSITION_SIGNATURE) {
         const data = log.data;
         const topics = log.topics;
@@ -312,7 +325,39 @@ export class DefuturesService {
           data,
           topics,
         }).args;
+        await this.prismaService.position.update({
+          where: {
+            positionId_defuturePairAddress: {
+              positionId: decoded_log.positionId,
+              defuturePairAddress: log.address,
+            },
+          },
+          data: {
+            deletedAt: timestamp,
+          },
+        });
       }
     });
   }
+  //   } else if (log.topics[0] === this.BURN_SIGNATURE) {
+  //     const data = log.data;
+  //     const topics = log.topics;
+  //     const decoded_log = this.iface_uniswapv2defuture.parseLog({
+  //       data,
+  //       topics,
+  //     }).args;
+  //     liquidityData.receiver = decoded_log.to;
+  //     liquidityData.amount0 = decoded_log.amount0;
+  //     liquidityData.amount1 = decoded_log.amount1;
+  //     tmpData.pairAddress = log.address;
+  // } else if(log.topics[0] === this.TRANSFER_SIGNATURE){
+  //     const data = log.data;
+  //     const topics = log.topics;
+  //     const decoded_log = this.iface_uniswapv2defuture.parseLog({
+  //       data,
+  //       topics,
+  //     }).args;
+  //     if(decoded_log.from === receipt.from && decoded_log.to === )
+  //     liquidityData.amountLp = decoded_log.value;
+  // });
 }

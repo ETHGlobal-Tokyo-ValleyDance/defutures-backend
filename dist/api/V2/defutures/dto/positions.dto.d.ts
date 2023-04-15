@@ -7,7 +7,7 @@ export declare class PositionDto {
     margin: string;
     strike: string;
     future: string;
-    defuturePairId: string;
+    defuturePairAddress: string;
     static of(info: PositionDto): PositionDto;
 }
 export declare class PositionsDto {

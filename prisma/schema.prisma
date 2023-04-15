@@ -98,11 +98,11 @@ model Position {
   strike String // with 10x -> buy 100y :: x
   future String // with 10x -> buy 100y :: y
 
-  defuturePair   DefuturePair @relation(fields: [defuturePairId], references: [id])
-  defuturePairId String       @db.ObjectId
-  AddMargin      AddMargin[]
+  defuturePair        DefuturePair @relation(fields: [defuturePairAddress], references: [address])
+  defuturePairAddress String
+  AddMargin           AddMargin[]
 
-  @@unique([positionId])
+  @@unique([positionId, defuturePairAddress])
   @@index([owner])
 }
 
@@ -156,10 +156,10 @@ model AddMargin {
   blockNumber Int
 
   from          String
-  positionId    String
+  positionId    String   @db.ObjectId
   amount        String
   currentMargin String
-  position      Position @relation(fields: [positionId], references: [positionId])
+  position      Position @relation(fields: [positionId], references: [id])
 
   @@unique([txHash])
 }

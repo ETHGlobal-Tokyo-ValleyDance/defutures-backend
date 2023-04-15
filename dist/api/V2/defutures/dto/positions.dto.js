@@ -23,7 +23,7 @@ class PositionDto {
             margin: info.margin,
             strike: info.strike,
             future: info.future,
-            defuturePairId: info.defuturePairId,
+            defuturePairAddress: info.defuturePairAddress,
         };
     }
 }
@@ -68,10 +68,14 @@ __decorate([
     __metadata("design:type", String)
 ], PositionDto.prototype, "future", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ title: "Defuture Pair Id", type: String, example: "0x000" }),
+    (0, swagger_1.ApiProperty)({
+        title: "Defuture Pair Address",
+        type: String,
+        example: "0x000",
+    }),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], PositionDto.prototype, "defuturePairId", void 0);
+], PositionDto.prototype, "defuturePairAddress", void 0);
 exports.PositionDto = PositionDto;
 class PositionsDto {
     static of(info, total) {
