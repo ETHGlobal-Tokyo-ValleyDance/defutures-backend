@@ -39,6 +39,9 @@ export class DefuturesService {
   private readonly ADD_POSITION_SIGNATURE = keccak256(
     toUtf8Bytes("AddPosition(address,uint256,uint8,uint112,uint112,uint112)")
   );
+  private readonly CLOSE_POSITION_SIGNATURE = keccak256(
+    toUtf8Bytes("ClosePosition(address,uint256,uint8,uint112,uint112,uint112")
+  );
 
   private readonly iface_erc20 = new ethers.utils.Interface(ERC20_ABI);
   private readonly iface_erc721 = new ethers.utils.Interface(ERC721_ABI);
@@ -182,6 +185,14 @@ export class DefuturesService {
             },
           },
         });
+        this.prismaService.position.update({
+          where: {
+            positionId: BigNumber.from(decoded_log.positionId).toString(),
+          },
+          data: {
+            margin: BigNumber.from(decoded_log.currentMargin).toString(),
+          },
+        });
       }
     });
   }
@@ -202,13 +213,18 @@ export class DefuturesService {
         return new Date(block.timestamp * 1000);
       });
 
-    const liquidityDb = {
+    const liquidityData = {
       createdAt: timestamp,
       txHash: txHash,
       sender: receipt.from,
       blockNumber: receipt.blockNumber,
       event: LiquidityEvent.MINT,
+      receiver: "",
+      amountLp: "",
+      amount0: "",
+      amount1: "",
     };
+    const tmpData = {};
 
     receipt.logs.map((log) => {
       if (log.topics[0] === this.ADD_POSITION_SIGNATURE) {
@@ -243,19 +259,60 @@ export class DefuturesService {
         }).args;
         if (decoded_log.from === constants.HashZero) {
           // minting of lp tokens
-          liquidityDb["receiver"] = decoded_log.to;
-          liquidityDb["amountLp"] = decoded_log.value;
+          liquidityData.receiver = decoded_log.to;
+          liquidityData.amountLp = decoded_log.value;
         }
       } else if (log.topics[0] === this.MINT_SIGNATURE) {
         const decoded_log = this.iface_uniswapv2pair.parseLog({
           data: log.data,
           topics: log.topics,
         }).args;
-        liquidityDb["amount0"] = decoded_log.amount0;
-        liquidityDb["amount1"] = decoded_log.amount1;
+        liquidityData.amount0 = decoded_log.amount0;
+        liquidityData.amount1 = decoded_log.amount1;
+      } else if (log.topics[0] === this.SWAP_SIGNATURE) {
+        tmpData["pairAddress"] = log.address;
       }
+    });
+    liquidityData["pair"] = {
+      connect: {
+        address: tmpData["pairAddress"],
+        chainId: chainId,
+      },
+    };
+    this.prismaService.liquidity.create({
+      data: liquidityData,
     });
   }
 
-  async createClearPosition(chainId: number, { txHash }: { txHash: string }) {}
+  async createClearPosition(chainId: number, { txHash }: { txHash: string }) {
+    const providerUrl = await this.prismaService.chain.findUnique({
+      where: { chainId },
+      select: { rpcUrl: true },
+    });
+    const provider = new ethers.providers.JsonRpcProvider(providerUrl.rpcUrl);
+    const receipt = await this.validateTxHash(provider, txHash);
+    const timestamp = await provider
+      .getBlock(receipt.blockNumber)
+      .then((block) => {
+        return new Date(block.timestamp * 1000);
+      });
+    const liquidityData = {
+      createdAt: timestamp,
+      txHash: txHash,
+      sender: receipt.from,
+      event: LiquidityEvent.BURN,
+      blockNumber: receipt.blockNumber,
+    };
+
+    receipt.logs.map((log) => {
+      if (log.topics[0] === this.CLOSE_POSITION_SIGNATURE) {
+        const data = log.data;
+        const topics = log.topics;
+        const decoded_log = this.iface_uniswapv2defuture.parseLog({
+          data,
+          topics,
+        }).args;
+      }
+    });
+  }
 }

@@ -10,6 +10,7 @@ export declare class DefuturesService {
     private readonly BURN_SIGNATURE;
     private readonly ADD_MARGIN_SIGNATURE;
     private readonly ADD_POSITION_SIGNATURE;
+    private readonly CLOSE_POSITION_SIGNATURE;
     private readonly iface_erc20;
     private readonly iface_erc721;
     private readonly iface_multical;

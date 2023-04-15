@@ -32,6 +32,7 @@ let DefuturesService = class DefuturesService {
         this.BURN_SIGNATURE = (0, utils_1.keccak256)((0, utils_1.toUtf8Bytes)("Burn(address,uint256,uint256,address)"));
         this.ADD_MARGIN_SIGNATURE = (0, utils_1.keccak256)((0, utils_1.toUtf8Bytes)("AddMargin(address,uint256,uint112,uint112)"));
         this.ADD_POSITION_SIGNATURE = (0, utils_1.keccak256)((0, utils_1.toUtf8Bytes)("AddPosition(address,uint256,uint8,uint112,uint112,uint112)"));
+        this.CLOSE_POSITION_SIGNATURE = (0, utils_1.keccak256)((0, utils_1.toUtf8Bytes)("ClosePosition(address,uint256,uint8,uint112,uint112,uint112"));
         this.iface_erc20 = new ethers_1.ethers.utils.Interface(ERC20_ABI);
         this.iface_erc721 = new ethers_1.ethers.utils.Interface(ERC721_ABI);
         this.iface_multical = new ethers_1.ethers.utils.Interface(Multical_ABI);
@@ -153,6 +154,14 @@ let DefuturesService = class DefuturesService {
                         },
                     },
                 });
+                this.prismaService.position.update({
+                    where: {
+                        positionId: ethers_2.BigNumber.from(decoded_log.positionId).toString(),
+                    },
+                    data: {
+                        margin: ethers_2.BigNumber.from(decoded_log.currentMargin).toString(),
+                    },
+                });
             }
         });
     }
@@ -168,13 +177,18 @@ let DefuturesService = class DefuturesService {
             .then((block) => {
             return new Date(block.timestamp * 1000);
         });
-        const liquidityDb = {
+        const liquidityData = {
             createdAt: timestamp,
             txHash: txHash,
             sender: receipt.from,
             blockNumber: receipt.blockNumber,
             event: client_1.LiquidityEvent.MINT,
+            receiver: "",
+            amountLp: "",
+            amount0: "",
+            amount1: "",
         };
+        const tmpData = {};
         receipt.logs.map((log) => {
             if (log.topics[0] === this.ADD_POSITION_SIGNATURE) {
                 const data = log.data;
@@ -208,8 +222,8 @@ let DefuturesService = class DefuturesService {
                     topics: log.topics,
                 }).args;
                 if (decoded_log.from === ethers_2.constants.HashZero) {
-                    liquidityDb["receiver"] = decoded_log.to;
-                    liquidityDb["amountLp"] = decoded_log.value;
+                    liquidityData.receiver = decoded_log.to;
+                    liquidityData.amountLp = decoded_log.value;
                 }
             }
             else if (log.topics[0] === this.MINT_SIGNATURE) {
@@ -217,12 +231,53 @@ let DefuturesService = class DefuturesService {
                     data: log.data,
                     topics: log.topics,
                 }).args;
-                liquidityDb["amount0"] = decoded_log.amount0;
-                liquidityDb["amount1"] = decoded_log.amount1;
+                liquidityData.amount0 = decoded_log.amount0;
+                liquidityData.amount1 = decoded_log.amount1;
+            }
+            else if (log.topics[0] === this.SWAP_SIGNATURE) {
+                tmpData["pairAddress"] = log.address;
+            }
+        });
+        liquidityData["pair"] = {
+            connect: {
+                address: tmpData["pairAddress"],
+                chainId: chainId,
+            },
+        };
+        this.prismaService.liquidity.create({
+            data: liquidityData,
+        });
+    }
+    async createClearPosition(chainId, { txHash }) {
+        const providerUrl = await this.prismaService.chain.findUnique({
+            where: { chainId },
+            select: { rpcUrl: true },
+        });
+        const provider = new ethers_1.ethers.providers.JsonRpcProvider(providerUrl.rpcUrl);
+        const receipt = await this.validateTxHash(provider, txHash);
+        const timestamp = await provider
+            .getBlock(receipt.blockNumber)
+            .then((block) => {
+            return new Date(block.timestamp * 1000);
+        });
+        const liquidityData = {
+            createdAt: timestamp,
+            txHash: txHash,
+            sender: receipt.from,
+            event: client_1.LiquidityEvent.BURN,
+            blockNumber: receipt.blockNumber,
+        };
+        receipt.logs.map((log) => {
+            if (log.topics[0] === this.CLOSE_POSITION_SIGNATURE) {
+                const data = log.data;
+                const topics = log.topics;
+                const decoded_log = this.iface_uniswapv2defuture.parseLog({
+                    data,
+                    topics,
+                }).args;
             }
         });
     }
-    async createClearPosition(chainId, { txHash }) { }
 };
 DefuturesService = __decorate([
     (0, common_1.Injectable)(),
