@@ -14,6 +14,7 @@ const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../../common/services/prisma.service");
 const ethers_1 = require("ethers");
 const utils_1 = require("ethers/lib/utils");
+const positions_dto_1 = require("./dto/positions.dto");
 const ethers_2 = require("ethers");
 let DefuturesService = class DefuturesService {
     constructor(prismaService) {
@@ -88,6 +89,19 @@ let DefuturesService = class DefuturesService {
                 });
             }
         });
+    }
+    async getPositions(chainId, address) {
+        const positions = await this.prismaService.position.findMany({
+            where: {
+                owner: address,
+                defuturePair: {
+                    chainId: chainId,
+                },
+            },
+        });
+        if (positions.length === 0)
+            throw new common_1.NotFoundException("Address not found");
+        return positions_dto_1.PositionsDto.of(positions, positions.length);
     }
     async createMargin(chainId, { txHash }) { }
     async createAddLiquidityHedge(chainId, { txHash }) { }

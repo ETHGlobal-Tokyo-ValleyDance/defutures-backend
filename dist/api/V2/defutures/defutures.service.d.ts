@@ -1,5 +1,6 @@
 import { PrismaService } from "src/common/services/prisma.service";
 import { providers } from "ethers";
+import { PositionsDto } from "./dto/positions.dto";
 export declare class DefuturesService {
     private readonly prismaService;
     constructor(prismaService: PrismaService);
@@ -14,6 +15,7 @@ export declare class DefuturesService {
     createPosition(chainId: number, { txHash }: {
         txHash: string;
     }): Promise<void>;
+    getPositions(chainId: number, address: string): Promise<PositionsDto>;
     createMargin(chainId: number, { txHash }: {
         txHash: string;
     }): Promise<void>;

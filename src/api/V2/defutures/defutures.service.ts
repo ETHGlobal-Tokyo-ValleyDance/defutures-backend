@@ -1,8 +1,12 @@
-import { Injectable, BadRequestException } from "@nestjs/common";
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from "@nestjs/common";
 import { PrismaService } from "src/common/services/prisma.service";
 import { ethers, providers } from "ethers";
 import { keccak256, toUtf8Bytes } from "ethers/lib/utils";
-import { PositionsDto } from "./dto/positions.dto";
+import { PositionsDto, PositionDto } from "./dto/positions.dto";
 import { BigNumber } from "ethers";
 
 @Injectable()
@@ -103,7 +107,21 @@ export class DefuturesService {
     });
   }
 
-  //   async getPositions(chainId: number, address: string): Promise<PositionsDto> {}
+  async getPositions(chainId: number, address: string): Promise<PositionsDto> {
+    const positions: PositionDto[] = await this.prismaService.position.findMany(
+      {
+        where: {
+          owner: address,
+          defuturePair: {
+            chainId: chainId,
+          },
+        },
+      }
+    );
+    if (positions.length === 0)
+      throw new NotFoundException("Address not found");
+    return PositionsDto.of(positions, positions.length);
+  }
 
   async createMargin(chainId: number, { txHash }: { txHash: string }) {}
 
