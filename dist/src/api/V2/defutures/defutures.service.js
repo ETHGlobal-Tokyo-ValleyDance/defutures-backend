@@ -31,7 +31,7 @@ let DefuturesService = class DefuturesService {
         this.MINT_SIGNATURE = (0, utils_1.keccak256)((0, utils_1.toUtf8Bytes)("Mint(address,uint256,uint256)"));
         this.BURN_SIGNATURE = (0, utils_1.keccak256)((0, utils_1.toUtf8Bytes)("Burn(address,uint256,uint256,address)"));
         this.ADD_MARGIN_SIGNATURE = (0, utils_1.keccak256)((0, utils_1.toUtf8Bytes)("AddMargin(address,uint256,uint112,uint112)"));
-        this.ADD_POSITION_SIGNATURE = (0, utils_1.keccak256)((0, utils_1.toUtf8Bytes)("AddPosition(address,uint256,uint8,uint112,uint112,uint112)"));
+        this.ADD_POSITION_SIGNATURE = (0, utils_1.keccak256)((0, utils_1.toUtf8Bytes)("AddPosition(address,uint256,uint8,uint112,uint112,uint112,uint112)"));
         this.CLOSE_POSITION_SIGNATURE = (0, utils_1.keccak256)((0, utils_1.toUtf8Bytes)("ClosePosition(address,uint256,uint8,uint112,uint112,uint112"));
         this.iface_erc20 = new ethers_1.ethers.utils.Interface(ERC20_ABI);
         this.iface_erc721 = new ethers_1.ethers.utils.Interface(ERC721_ABI);
@@ -184,17 +184,10 @@ let DefuturesService = class DefuturesService {
         });
         const positions = [];
         receipt.logs.map(async (log) => {
-            const data = log.data;
-            const topics = log.topics;
-            const decoded_log = this.iface_uniswapv2defuturerouter.parseLog({
-                data,
-                topics,
-            }).args;
-            console.log(decoded_log);
             if (log.topics[0] === this.ADD_POSITION_SIGNATURE) {
                 const data = log.data;
                 const topics = log.topics;
-                const decoded_log = this.iface_uniswapv2defuturerouter.parseLog({
+                const decoded_log = this.iface_uniswapv2defuture.parseLog({
                     data,
                     topics,
                 }).args;
@@ -210,12 +203,12 @@ let DefuturesService = class DefuturesService {
                     defuturePairAddress: log.address,
                 });
             }
-            if (positions.length > 0) {
-                await this.prismaService.position.createMany({
-                    data: positions,
-                });
-            }
         });
+        if (positions.length > 0) {
+            await this.prismaService.position.createMany({
+                data: positions,
+            });
+        }
     }
     async createClearPosition(chainId, { txHash }) {
         const providerUrl = await this.prismaService.chain.findUnique({
@@ -229,7 +222,6 @@ let DefuturesService = class DefuturesService {
             .then((block) => {
             return new Date(block.timestamp * 1000);
         });
-        console.log(receipt);
         const liquidityData = {
             createdAt: timestamp,
             txHash: txHash,
@@ -252,8 +244,6 @@ let DefuturesService = class DefuturesService {
                     data,
                     topics,
                 }).args;
-                console.log(decoded_log);
-                console.log(liquidityData);
                 await this.prismaService.position.update({
                     where: {
                         positionId_defuturePairAddress: {

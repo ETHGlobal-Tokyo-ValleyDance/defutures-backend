@@ -11,6 +11,7 @@ import {
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiOperation,
+  ApiResponseProperty,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
 import { DefuturesService } from "./defutures.service";

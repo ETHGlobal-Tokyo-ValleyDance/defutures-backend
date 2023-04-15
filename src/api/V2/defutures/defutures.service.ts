@@ -37,7 +37,9 @@ export class DefuturesService {
     toUtf8Bytes("AddMargin(address,uint256,uint112,uint112)")
   );
   private readonly ADD_POSITION_SIGNATURE = keccak256(
-    toUtf8Bytes("AddPosition(address,uint256,uint8,uint112,uint112,uint112)")
+    toUtf8Bytes(
+      "AddPosition(address,uint256,uint8,uint112,uint112,uint112,uint112)"
+    )
   );
   private readonly CLOSE_POSITION_SIGNATURE = keccak256(
     toUtf8Bytes("ClosePosition(address,uint256,uint8,uint112,uint112,uint112")
@@ -235,21 +237,22 @@ export class DefuturesService {
     const positions: Prisma.PositionCreateManyInput[] = [];
     // console.log(receipt);
     receipt.logs.map(async (log) => {
-      const data = log.data;
-      const topics = log.topics;
-      const decoded_log = this.iface_uniswapv2defuturerouter.parseLog({
-        data,
-        topics,
-      }).args;
-      console.log(decoded_log);
+      //   console.log(log.topics[0]);
+      //   const data = log.data;
+      //   const topics = log.topics;
+      //   const decoded_log = this.iface_uniswapv2defuturerouter.parseLog({
+      //     data,
+      //     topics,
+      //   }).args;
+      //   console.log(decoded_log);
       if (log.topics[0] === this.ADD_POSITION_SIGNATURE) {
         const data = log.data;
         const topics = log.topics;
-        const decoded_log = this.iface_uniswapv2defuturerouter.parseLog({
+        const decoded_log = this.iface_uniswapv2defuture.parseLog({
           data,
           topics,
         }).args;
-
+        // console.log(decoded_log);
         positions.push({
           createdAt: timestamp,
           updatedAt: timestamp,
@@ -284,13 +287,12 @@ export class DefuturesService {
         //   } else if (log.topics[0] === this.SWAP_SIGNATURE) {
         //     tmpData["pairAddress"] = log.address;
       }
-
-      if (positions.length > 0) {
-        await this.prismaService.position.createMany({
-          data: positions,
-        });
-      }
     });
+    if (positions.length > 0) {
+      await this.prismaService.position.createMany({
+        data: positions,
+      });
+    }
     // liquidityData.pair = {
     //   connect: {
     //     address: tmpData["pairAddress"],
@@ -315,7 +317,7 @@ export class DefuturesService {
       .then((block) => {
         return new Date(block.timestamp * 1000);
       });
-    console.log(receipt);
+    // console.log(receipt);
     const liquidityData = {
       createdAt: timestamp,
       txHash: txHash,
@@ -338,8 +340,8 @@ export class DefuturesService {
           data,
           topics,
         }).args;
-        console.log(decoded_log);
-        console.log(liquidityData);
+        // console.log(decoded_log);
+        // console.log(liquidityData);
         await this.prismaService.position.update({
           where: {
             positionId_defuturePairAddress: {

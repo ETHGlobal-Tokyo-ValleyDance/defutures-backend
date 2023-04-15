@@ -10,5 +10,4 @@ export declare class RegisterDataController {
     postToken(chainId: number, tokenInfoPayload: TokenInfoPayload): Promise<import(".prisma/client").Token>;
     postPair(chainId: number, pairInfoPayload: PairInfoPayload): Promise<import(".prisma/client").Pair>;
     postDefuturePair(chainId: number, defuturePairInfoPayload: DefuturePairInfoPayload): Promise<import(".prisma/client").DefuturePair>;
-    : any;
 }

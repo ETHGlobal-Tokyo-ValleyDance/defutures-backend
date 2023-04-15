@@ -4,9 +4,9 @@ import * as data from "./data.json";
 async function main() {
   const object = {
     chainId: 1,
-    name: "Ethereum", //INPUT
-    symbol: "ETH", //INPUT
-    rpcUrl: "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161", //INPUT
+    name: "Mumbai", //INPUT
+    symbol: "MUM", //INPUT
+    rpcUrl: "https://rpc-mumbai.maticvigil.com", //INPUT
     blockTime: 3, //INPUT
     decimals: 18,
     t1: "0x580A9E9c750841628cb9ba2e217512A9703D8662",

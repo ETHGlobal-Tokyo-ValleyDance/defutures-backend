@@ -74,10 +74,6 @@ __decorate([
     __metadata("design:paramtypes", [Number, defuturePairInfo_payload_1.DefuturePairInfoPayload]),
     __metadata("design:returntype", Promise)
 ], RegisterDataController.prototype, "postDefuturePair", null);
-__decorate([
-    (0, common_1.Post)(":chainId/postDefutureToken"),
-    __metadata("design:type", Object)
-], RegisterDataController.prototype, "", void 0);
 RegisterDataController = __decorate([
     (0, common_1.Controller)("register-data"),
     __metadata("design:paramtypes", [register_data_service_1.RegisterDataService])

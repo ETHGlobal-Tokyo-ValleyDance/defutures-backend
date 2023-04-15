@@ -1,0 +1,13 @@
+{
+    "80001": {
+        "t1": "0x19A7Ff2D5905E010bf234123A63AaC48524e7EDa",
+        "t2": "0x43cc87C7a8784A8Ba699093e85397C0502af65af",
+        "V2Factory": "0xC79dE07eAA968b210e78c2cce2d641f6BC0d6b8F",
+        "V2Router": "0xcE9B30B0e1E9e5507aD7Da63f4c4Fb871c11dd3f",
+        "WETH": "0xBd0a8fFeF16a13692209ac0cd61DB4cC1E8F48c2",
+        "pair12": "0x414caF291D2B2Bfd772e1F2fb3b03B7C8337FEc5",
+        "defutureFactory": "0xEdf4842f14F339d4541501016cb4b6be55cdc856",
+        "defutureRouter": "0xca6D45dD412E740b65A35B8A0F46b478075a119c",
+        "defuture12": "0x429C9403281f378A9fDc245BdBfB599348E28FDD"
+    }
+}
