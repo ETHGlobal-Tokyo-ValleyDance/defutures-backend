@@ -6,6 +6,7 @@ import { ParseIntPipe } from "@nestjs/common";
 import { ChainInfoPayload } from "./payload/chainInfo.payload";
 import { TokenInfoPayload } from "./payload/tokenInfo.payload";
 import { PairInfoPayload } from "./payload/pairInfo.payload";
+import { DefuturePairInfoPayload } from "./payload/defuturePairInfo.payload";
 
 @Controller("register-data")
 export class RegisterDataController {

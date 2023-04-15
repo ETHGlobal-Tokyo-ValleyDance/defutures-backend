@@ -11,12 +11,23 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DefuturePairInfoPayload = void 0;
 const swagger_1 = require("@nestjs/swagger");
+const class_validator_1 = require("class-validator");
 class DefuturePairInfoPayload {
 }
 __decorate([
     (0, swagger_1.ApiProperty)({ title: "Defuture Pair Address", example: {} }),
-    IsString(),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], DefuturePairInfoPayload.prototype, "address", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ title: "Token0 Address", example: {} }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], DefuturePairInfoPayload.prototype, "token0Address", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ title: "Token1 Address", example: {} }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], DefuturePairInfoPayload.prototype, "token1Address", void 0);
 exports.DefuturePairInfoPayload = DefuturePairInfoPayload;
 //# sourceMappingURL=defuturePairInfo.payload.js.map

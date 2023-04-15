@@ -73,6 +73,34 @@ let RegisterDataService = class RegisterDataService {
             },
         });
     }
+    async registerDefuturePairService(chainId, { address, token0Address, token1Address }) {
+        return await this.prismaService.defuturePair.create({
+            data: {
+                address,
+                chain: {
+                    connect: {
+                        chainId: chainId,
+                    },
+                },
+                token0: {
+                    connect: {
+                        chainId_address: {
+                            chainId,
+                            address: token0Address,
+                        },
+                    },
+                },
+                token1: {
+                    connect: {
+                        chainId_address: {
+                            chainId: chainId,
+                            address: token1Address,
+                        },
+                    },
+                },
+            },
+        });
+    }
 };
 RegisterDataService = __decorate([
     (0, common_1.Injectable)(),

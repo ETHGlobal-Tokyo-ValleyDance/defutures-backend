@@ -83,4 +83,36 @@ export class RegisterDataService {
       },
     });
   }
+
+  async registerDefuturePairService(
+    chainId: number,
+    { address, token0Address, token1Address }: PairInfoPayload
+  ) {
+    return await this.prismaService.defuturePair.create({
+      data: {
+        address,
+        chain: {
+          connect: {
+            chainId: chainId,
+          },
+        },
+        token0: {
+          connect: {
+            chainId_address: {
+              chainId,
+              address: token0Address,
+            },
+          },
+        },
+        token1: {
+          connect: {
+            chainId_address: {
+              chainId: chainId,
+              address: token1Address,
+            },
+          },
+        },
+      },
+    });
+  }
 }

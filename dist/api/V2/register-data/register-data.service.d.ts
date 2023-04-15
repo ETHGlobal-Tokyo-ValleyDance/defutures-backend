@@ -8,4 +8,5 @@ export declare class RegisterDataService {
     registerChainService(chainId: number, { name, symbol, rpcUrl, blockTime, factoryAddress, routerAddress, WETHAddress, }: ChainInfoPayload): Promise<import(".prisma/client").Chain>;
     registerTokenService(chainId: number, { name, symbol, address, decimals }: TokenInfoPayload): Promise<import(".prisma/client").Token>;
     registerPairService(chainId: number, { address, token0Address, token1Address }: PairInfoPayload): Promise<import(".prisma/client").Pair>;
+    registerDefuturePairService(chainId: number, { address, token0Address, token1Address }: PairInfoPayload): Promise<import(".prisma/client").DefuturePair>;
 }

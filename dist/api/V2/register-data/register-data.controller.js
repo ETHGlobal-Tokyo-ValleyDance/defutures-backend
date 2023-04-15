@@ -11,7 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RegisterDataController = void 0;
 const common_1 = require("@nestjs/common");
@@ -21,6 +20,7 @@ const common_2 = require("@nestjs/common");
 const chainInfo_payload_1 = require("./payload/chainInfo.payload");
 const tokenInfo_payload_1 = require("./payload/tokenInfo.payload");
 const pairInfo_payload_1 = require("./payload/pairInfo.payload");
+const defuturePairInfo_payload_1 = require("./payload/defuturePairInfo.payload");
 let RegisterDataController = class RegisterDataController {
     constructor(registerDataService) {
         this.registerDataService = registerDataService;
@@ -71,7 +71,7 @@ __decorate([
     __param(0, (0, common_1.Param)("chainId", common_2.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, typeof (_a = typeof DefuturePairInfoPayload !== "undefined" && DefuturePairInfoPayload) === "function" ? _a : Object]),
+    __metadata("design:paramtypes", [Number, defuturePairInfo_payload_1.DefuturePairInfoPayload]),
     __metadata("design:returntype", Promise)
 ], RegisterDataController.prototype, "postDefuturePair", null);
 RegisterDataController = __decorate([
