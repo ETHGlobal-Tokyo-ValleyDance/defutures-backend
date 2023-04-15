@@ -48,7 +48,47 @@ let DefuturesService = class DefuturesService {
             throw new common_1.BadRequestException(`Transaction with hash ${txHash} does not exist.`);
         return receipt;
     }
-    async createPosition(chainId, { txHash }) { }
+    async createPosition(chainId, { txHash }) {
+        const providerUrl = await this.prismaService.chain.findUnique({
+            where: { chainId },
+            select: { rpcUrl: true },
+        });
+        const provider = new ethers_1.ethers.providers.JsonRpcProvider(providerUrl.rpcUrl);
+        const receipt = await this.validateTxHash(provider, txHash);
+        const timestamp = await provider
+            .getBlock(receipt.blockNumber)
+            .then((block) => {
+            return new Date(block.timestamp * 1000);
+        });
+        receipt.logs.map((log) => {
+            if (log.topics[0] === this.ADD_POSITION_SIGNATURE) {
+                const data = log.data;
+                const topics = log.topics;
+                const decoded_log = this.iface_uniswapv2defuture.parseLog({
+                    data,
+                    topics,
+                }).args;
+                console.log(decoded_log);
+                this.prismaService.position.create({
+                    data: {
+                        createdAt: timestamp,
+                        updatedAt: timestamp,
+                        owner: decoded_log.owner,
+                        positionId: ethers_2.BigNumber.from(decoded_log.positionId).toString(),
+                        positionType: ethers_2.BigNumber.from(decoded_log.positionType).toString(),
+                        margin: ethers_2.BigNumber.from(decoded_log.margin).toString(),
+                        strike: ethers_2.BigNumber.from(decoded_log.strike).toString(),
+                        future: ethers_2.BigNumber.from(decoded_log.future).toString(),
+                        defuturePair: {
+                            connect: {
+                                address: log.address,
+                            },
+                        },
+                    },
+                });
+            }
+        });
+    }
     async createMargin(chainId, { txHash }) { }
     async createAddLiquidityHedge(chainId, { txHash }) { }
     async createClearPosition(chainId, { txHash }) { }

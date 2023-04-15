@@ -60,7 +60,48 @@ export class DefuturesService {
     return receipt;
   }
 
-  async createPosition(chainId: number, { txHash }: { txHash: string }) {}
+  async createPosition(chainId: number, { txHash }: { txHash: string }) {
+    const providerUrl = await this.prismaService.chain.findUnique({
+      where: { chainId },
+      select: { rpcUrl: true },
+    });
+    const provider = new ethers.providers.JsonRpcProvider(providerUrl.rpcUrl);
+    const receipt = await this.validateTxHash(provider, txHash);
+    const timestamp = await provider
+      .getBlock(receipt.blockNumber)
+      .then((block) => {
+        return new Date(block.timestamp * 1000);
+      });
+
+    receipt.logs.map((log) => {
+      if (log.topics[0] === this.ADD_POSITION_SIGNATURE) {
+        const data = log.data;
+        const topics = log.topics;
+        const decoded_log = this.iface_uniswapv2defuture.parseLog({
+          data,
+          topics,
+        }).args;
+        console.log(decoded_log);
+        this.prismaService.position.create({
+          data: {
+            createdAt: timestamp,
+            updatedAt: timestamp,
+            owner: decoded_log.owner,
+            positionId: BigNumber.from(decoded_log.positionId).toString(),
+            positionType: BigNumber.from(decoded_log.positionType).toString(),
+            margin: BigNumber.from(decoded_log.margin).toString(),
+            strike: BigNumber.from(decoded_log.strike).toString(),
+            future: BigNumber.from(decoded_log.future).toString(),
+            defuturePair: {
+              connect: {
+                address: log.address,
+              },
+            },
+          },
+        });
+      }
+    });
+  }
 
   //   async getPositions(chainId: number, address: string): Promise<PositionsDto> {}
 
