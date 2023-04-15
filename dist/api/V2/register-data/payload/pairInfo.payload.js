@@ -9,31 +9,26 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TokenInfoPayload = void 0;
+exports.PairInfoPayload = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 const ethers_1 = require("ethers");
-class TokenInfoPayload {
+class PairInfoPayload {
 }
 __decorate([
-    (0, swagger_1.ApiProperty)({ title: "address", example: ethers_1.constants.HashZero }),
+    (0, swagger_1.ApiProperty)({ title: "Token Name", example: ethers_1.constants.HashZero }),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], TokenInfoPayload.prototype, "address", void 0);
+], PairInfoPayload.prototype, "address", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ title: "name", example: ethers_1.constants.HashZero }),
+    (0, swagger_1.ApiProperty)({ title: "Token0 Address", example: ethers_1.constants.HashZero }),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], TokenInfoPayload.prototype, "name", void 0);
+], PairInfoPayload.prototype, "token0Address", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ title: "symbol", example: ethers_1.constants.HashZero }),
+    (0, swagger_1.ApiProperty)({ title: "Token1 Address", example: ethers_1.constants.HashZero }),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], TokenInfoPayload.prototype, "symbol", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ title: "decimals", example: 18 }),
-    (0, class_validator_1.IsInt)(),
-    __metadata("design:type", Number)
-], TokenInfoPayload.prototype, "decimals", void 0);
-exports.TokenInfoPayload = TokenInfoPayload;
-//# sourceMappingURL=tokenInfo.payload.js.map
+], PairInfoPayload.prototype, "token1Address", void 0);
+exports.PairInfoPayload = PairInfoPayload;
+//# sourceMappingURL=pairInfo.payload.js.map

@@ -29,7 +29,7 @@ model Chain {
 
 model Token {
   id       String @id @default(cuid()) @map("_id") @db.ObjectId
-  chainId  String @db.ObjectId
+  chainId  Int
   address  String
   name     String
   symbol   String
@@ -39,7 +39,7 @@ model Token {
   swapFrom Swap[] @relation("swap_from")
   swapTo   Swap[] @relation("swap_to")
 
-  chain         Chain          @relation(fields: [chainId], references: [id])
+  chain         Chain          @relation(fields: [chainId], references: [chainId])
   DefuturePair0 DefuturePair[] @relation("defuture_pair_token_0")
   DefuturePair1 DefuturePair[] @relation("defuture_pair_token_1")
 

@@ -2,8 +2,10 @@ import { Controller, Post, Body, Param } from "@nestjs/common";
 import { ApiOperation } from "@nestjs/swagger";
 import { RegisterDataService } from "./register-data.service";
 import { ParseIntPipe } from "@nestjs/common";
+
 import { ChainInfoPayload } from "./payload/chainInfo.payload";
 import { TokenInfoPayload } from "./payload/tokenInfo.payload";
+import { PairInfoPayload } from "./payload/pairInfo.payload";
 
 @Controller("register-data")
 export class RegisterDataController {
@@ -30,6 +32,29 @@ export class RegisterDataController {
     return await this.registerDataService.registerTokenService(
       chainId,
       tokenInfoPayload
+    );
+  }
+
+  @Post(":chainId/postPair")
+  @ApiOperation({ summary: "Post a new pair" })
+  async postPair(
+    @Param("chainId", ParseIntPipe) chainId: number,
+    @Body() pairInfoPayload: PairInfoPayload
+  ) {
+    return await this.registerDataService.registerPairService(
+      chainId,
+      pairInfoPayload
+    );
+  }
+  @Post(":chainId/postDefuturePair")
+  @ApiOperation({ summary: "Post a new defuture pair" })
+  async postDefuturePair(
+    @Param("chainId", ParseIntPipe) chainId: number,
+    @Body() defuturePairInfoPayload: DefuturePairInfoPayload
+  ) {
+    return await this.registerDataService.registerDefuturePairService(
+      chainId,
+      defuturePairInfoPayload
     );
   }
 }

@@ -16,31 +16,43 @@ const ethers_1 = require("ethers");
 class ChainInfoPayload {
 }
 __decorate([
-    (0, swagger_1.ApiProperty)({ title: "Token Name", example: ethers_1.constants.HashZero }),
+    (0, swagger_1.ApiProperty)({ title: "Chain Name", example: "Gnosis" }),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], ChainInfoPayload.prototype, "name", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ title: "Chain Symbol", example: "GNO" }),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], ChainInfoPayload.prototype, "symbol", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ title: "Chain RPC URL", example: "https://rpc.gnosis.io" }),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], ChainInfoPayload.prototype, "rpcUrl", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ title: "Chain Block Time", example: 15 }),
     (0, class_validator_1.IsInt)(),
     __metadata("design:type", Number)
 ], ChainInfoPayload.prototype, "blockTime", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        title: "Chain Factory Address",
+        example: ethers_1.constants.AddressZero,
+    }),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], ChainInfoPayload.prototype, "factoryAddress", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        title: "Chain Router Address",
+        example: ethers_1.constants.AddressZero,
+    }),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], ChainInfoPayload.prototype, "routerAddress", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ title: "Chain WETH Address", example: ethers_1.constants.AddressZero }),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], ChainInfoPayload.prototype, "WETHAddress", void 0);
