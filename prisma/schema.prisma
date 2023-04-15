@@ -130,7 +130,6 @@ model Liquidity {
   id          String         @id @default(cuid()) @map("_id") @db.ObjectId
   createdAt   DateTime
   txHash      String
-  logIndex    Int
   blockNumber Int
   event       LiquidityEvent
   sender      String // EOA of liquidity transaction
@@ -141,13 +140,13 @@ model Liquidity {
   amount0     String // amount of token0
   amount1     String // amount of token1
 
-  @@unique([txHash, logIndex])
+  @@unique([txHash])
   @@index([sender, receiver, blockNumber])
 }
 
 enum LiquidityEvent {
-  Mint // add liquidity and mint lp token
-  Burn // withdraw liquidity and burn lp token
+  MINT // add liquidity and mint lp token
+  BURN // withdraw liquidity and burn lp token
 }
 
 model AddMargin {

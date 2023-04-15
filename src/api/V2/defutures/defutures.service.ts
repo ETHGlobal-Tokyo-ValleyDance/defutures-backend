@@ -7,7 +7,15 @@ import { PrismaService } from "src/common/services/prisma.service";
 import { ethers, providers } from "ethers";
 import { keccak256, toUtf8Bytes } from "ethers/lib/utils";
 import { PositionsDto, PositionDto } from "./dto/positions.dto";
-import { BigNumber } from "ethers";
+import { BigNumber, constants } from "ethers";
+import { LiquidityEvent } from "@prisma/client";
+
+import * as ERC20_ABI from "../../../abi/ERC20.json";
+import * as ERC721_ABI from "../../../abi/ERC721.json";
+import * as Multical_ABI from "../../../abi/Multicall2.json";
+import * as UniswapV2Defuture_ABI from "../../../abi/UniswapV2Defuture.json";
+import * as UniswapV2DefutureRouter_ABI from "../../../abi/UniswapV2DefutureRouter.json";
+import * as UniswapV2Pair_ABI from "../../../abi/UniswapV2Pair.json";
 
 @Injectable()
 export class DefuturesService {
@@ -30,6 +38,19 @@ export class DefuturesService {
   );
   private readonly ADD_POSITION_SIGNATURE = keccak256(
     toUtf8Bytes("AddPosition(address,uint256,uint8,uint112,uint112,uint112)")
+  );
+
+  private readonly iface_erc20 = new ethers.utils.Interface(ERC20_ABI);
+  private readonly iface_erc721 = new ethers.utils.Interface(ERC721_ABI);
+  private readonly iface_multical = new ethers.utils.Interface(Multical_ABI);
+  private readonly iface_uniswapv2defuture = new ethers.utils.Interface(
+    UniswapV2Defuture_ABI
+  );
+  private readonly iface_uniswapv2defuturerouter = new ethers.utils.Interface(
+    UniswapV2DefutureRouter_ABI
+  );
+  private readonly iface_uniswapv2pair = new ethers.utils.Interface(
+    UniswapV2Pair_ABI
   );
 
   async testDecodeEventLog() {
@@ -123,12 +144,118 @@ export class DefuturesService {
     return PositionsDto.of(positions, positions.length);
   }
 
-  async createMargin(chainId: number, { txHash }: { txHash: string }) {}
+  async createMargin(chainId: number, { txHash }: { txHash: string }) {
+    const providerUrl = await this.prismaService.chain.findUnique({
+      where: { chainId },
+      select: { rpcUrl: true },
+    });
+    const provider = new ethers.providers.JsonRpcProvider(providerUrl.rpcUrl);
+    const receipt = await this.validateTxHash(provider, txHash);
+    const timestamp = await provider
+      .getBlock(receipt.blockNumber)
+      .then((block) => {
+        return new Date(block.timestamp * 1000);
+      });
+
+    receipt.logs.map((log) => {
+      if (log.topics[0] === this.ADD_MARGIN_SIGNATURE) {
+        const data = log.data;
+        const topics = log.topics;
+        const decoded_log = this.iface_uniswapv2defuture.parseLog({
+          data,
+          topics,
+        }).args;
+        console.log(decoded_log);
+        this.prismaService.addMargin.create({
+          data: {
+            createdAt: timestamp,
+            txHash: txHash,
+            blockNumber: receipt.blockNumber,
+            from: BigNumber.from(decoded_log.from).toString(),
+            positionId: BigNumber.from(decoded_log.positionId).toString(),
+            amount: BigNumber.from(decoded_log.amount).toString(),
+            currentMargin: BigNumber.from(decoded_log.currentMargin).toString(),
+            position: {
+              connect: {
+                positionId: BigNumber.from(decoded_log.positionId).toString(),
+              },
+            },
+          },
+        });
+      }
+    });
+  }
 
   async createAddLiquidityHedge(
     chainId: number,
     { txHash }: { txHash: string }
-  ) {}
+  ) {
+    const providerUrl = await this.prismaService.chain.findUnique({
+      where: { chainId },
+      select: { rpcUrl: true },
+    });
+    const provider = new ethers.providers.JsonRpcProvider(providerUrl.rpcUrl);
+    const receipt = await this.validateTxHash(provider, txHash);
+    const timestamp = await provider
+      .getBlock(receipt.blockNumber)
+      .then((block) => {
+        return new Date(block.timestamp * 1000);
+      });
+
+    const liquidityDb = {
+      createdAt: timestamp,
+      txHash: txHash,
+      sender: receipt.from,
+      blockNumber: receipt.blockNumber,
+      event: LiquidityEvent.MINT,
+    };
+
+    receipt.logs.map((log) => {
+      if (log.topics[0] === this.ADD_POSITION_SIGNATURE) {
+        const data = log.data;
+        const topics = log.topics;
+        const decoded_log = this.iface_uniswapv2defuturerouter.parseLog({
+          data,
+          topics,
+        }).args;
+        console.log(decoded_log);
+        this.prismaService.position.create({
+          data: {
+            createdAt: timestamp,
+            updatedAt: timestamp,
+            owner: decoded_log.owner,
+            positionId: decoded_log.positionId,
+            positionType: decoded_log.positionType,
+            margin: decoded_log.margin,
+            strike: decoded_log.strike,
+            future: decoded_log.future,
+            defuturePair: {
+              connect: {
+                address: log.address,
+              },
+            },
+          },
+        });
+      } else if (log.topics[0] === this.TRANSFER_SIGNATURE) {
+        const decoded_log = this.iface_erc20.parseLog({
+          data: log.data,
+          topics: log.topics,
+        }).args;
+        if (decoded_log.from === constants.HashZero) {
+          // minting of lp tokens
+          liquidityDb["receiver"] = decoded_log.to;
+          liquidityDb["amountLp"] = decoded_log.value;
+        }
+      } else if (log.topics[0] === this.MINT_SIGNATURE) {
+        const decoded_log = this.iface_uniswapv2pair.parseLog({
+          data: log.data,
+          topics: log.topics,
+        }).args;
+        liquidityDb["amount0"] = decoded_log.amount0;
+        liquidityDb["amount1"] = decoded_log.amount1;
+      }
+    });
+  }
 
   async createClearPosition(chainId: number, { txHash }: { txHash: string }) {}
 }

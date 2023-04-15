@@ -10,6 +10,12 @@ export declare class DefuturesService {
     private readonly BURN_SIGNATURE;
     private readonly ADD_MARGIN_SIGNATURE;
     private readonly ADD_POSITION_SIGNATURE;
+    private readonly iface_erc20;
+    private readonly iface_erc721;
+    private readonly iface_multical;
+    private readonly iface_uniswapv2defuture;
+    private readonly iface_uniswapv2defuturerouter;
+    private readonly iface_uniswapv2pair;
     testDecodeEventLog(): Promise<number>;
     validateTxHash(provider: providers.JsonRpcProvider, txHash: string): Promise<providers.TransactionReceipt>;
     createPosition(chainId: number, { txHash }: {
