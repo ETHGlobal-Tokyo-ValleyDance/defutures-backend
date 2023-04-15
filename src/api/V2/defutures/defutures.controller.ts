@@ -22,10 +22,10 @@ import { PositionsDto } from "./dto/positions.dto";
 export class DefuturesController {
   constructor(private readonly defuturesService: DefuturesService) {}
 
-  @Post(":chainId/test")
+  @Post("test")
   @ApiOperation({ summary: "Test" })
   async test() {
-    return this.defuturesService.testDecodeEventLog();
+    return await this.defuturesService.testDecodeEventLog();
   }
 
   /********************POSITION CONTROLLER *************************************/

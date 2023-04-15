@@ -8,7 +8,7 @@ import { ethers, providers } from "ethers";
 import { keccak256, toUtf8Bytes } from "ethers/lib/utils";
 import { PositionsDto, PositionDto } from "./dto/positions.dto";
 import { BigNumber, constants } from "ethers";
-import { LiquidityEvent } from "@prisma/client";
+import { LiquidityEvent, Prisma, PrismaClient } from "@prisma/client";
 
 import * as ERC20_ABI from "../../../abi/ERC20.json";
 import * as ERC721_ABI from "../../../abi/ERC721.json";
@@ -218,21 +218,30 @@ export class DefuturesService {
         return new Date(block.timestamp * 1000);
       });
 
-    const liquidityData = {
-      createdAt: timestamp,
-      txHash: txHash,
-      sender: receipt.from,
-      blockNumber: receipt.blockNumber,
-      event: LiquidityEvent.MINT,
-      receiver: "",
-      amountLp: "",
-      amount0: "",
-      amount1: "",
-      pair: {},
-    };
-    const tmpData = {};
+    // const liquidityData = {
+    //   createdAt: timestamp,
+    //   txHash: txHash,
+    //   sender: receipt.from,
+    //   blockNumber: receipt.blockNumber,
+    //   event: LiquidityEvent.MINT,
+    //   receiver: "",
+    //   amountLp: "",
+    //   amount0: "",
+    //   amount1: "",
+    //   pair: {},
+    // };
+    // const tmpData = {};
 
+    const positions: Prisma.PositionCreateManyInput[] = [];
+    // console.log(receipt);
     receipt.logs.map(async (log) => {
+      const data = log.data;
+      const topics = log.topics;
+      const decoded_log = this.iface_uniswapv2defuturerouter.parseLog({
+        data,
+        topics,
+      }).args;
+      console.log(decoded_log);
       if (log.topics[0] === this.ADD_POSITION_SIGNATURE) {
         const data = log.data;
         const topics = log.topics;
@@ -240,54 +249,58 @@ export class DefuturesService {
           data,
           topics,
         }).args;
-        console.log(decoded_log);
-        await this.prismaService.position.create({
-          data: {
-            createdAt: timestamp,
-            updatedAt: timestamp,
-            owner: decoded_log.owner,
-            positionId: decoded_log.positionId,
-            positionType: decoded_log.positionType,
-            margin: decoded_log.margin,
-            strike: decoded_log.strike,
-            future: decoded_log.future,
-            defuturePair: {
-              connect: {
-                address: log.address,
-              },
-            },
-          },
+
+        positions.push({
+          createdAt: timestamp,
+          updatedAt: timestamp,
+          owner: decoded_log.owner,
+          positionId: BigNumber.from(decoded_log.positionId).toString(),
+          positionType: BigNumber.from(decoded_log.positionType).toString(),
+          margin: BigNumber.from(decoded_log.margin).toString(),
+          strike: BigNumber.from(decoded_log.strike).toString(),
+          future: BigNumber.from(decoded_log.future).toString(),
+          defuturePairAddress: log.address,
         });
-      } else if (log.topics[0] === this.TRANSFER_SIGNATURE) {
-        const decoded_log = this.iface_erc20.parseLog({
-          data: log.data,
-          topics: log.topics,
-        }).args;
-        if (decoded_log.from === constants.HashZero) {
-          // minting of lp tokens
-          liquidityData.receiver = decoded_log.to;
-          liquidityData.amountLp = decoded_log.value;
-        }
-      } else if (log.topics[0] === this.MINT_SIGNATURE) {
-        const decoded_log = this.iface_uniswapv2pair.parseLog({
-          data: log.data,
-          topics: log.topics,
-        }).args;
-        liquidityData.amount0 = decoded_log.amount0;
-        liquidityData.amount1 = decoded_log.amount1;
-      } else if (log.topics[0] === this.SWAP_SIGNATURE) {
-        tmpData["pairAddress"] = log.address;
+        //   } else if (log.topics[0] === this.TRANSFER_SIGNATURE) {
+        //     const decoded_log = this.iface_erc20.parseLog({
+        //       data: log.data,
+        //       topics: log.topics,
+        //     }).args;
+        //     if (decoded_log.from === constants.HashZero) {
+        //       // minting of lp tokens
+        //       liquidityData.receiver = decoded_log.to;
+        //       liquidityData.amountLp = decoded_log.value;
+        //     }
+        //   } else if (log.topics[0] === this.MINT_SIGNATURE) {
+        //     const decoded_log = this.iface_uniswapv2pair.parseLog({
+        //       data: log.data,
+        //       topics: log.topics,
+        //     }).args;
+        //     console.log(decoded_log.amount0);
+        //     console.log(decoded_log.amount1);
+
+        //     liquidityData.amount0 = BigNumber.from(decoded_log.amount0).toString();
+        //     liquidityData.amount1 = BigNumber.from(decoded_log.amount1).toString();
+        //   } else if (log.topics[0] === this.SWAP_SIGNATURE) {
+        //     tmpData["pairAddress"] = log.address;
+      }
+
+      if (positions.length > 0) {
+        await this.prismaService.position.createMany({
+          data: positions,
+        });
       }
     });
-    liquidityData.pair = {
-      connect: {
-        address: tmpData["pairAddress"],
-        chainId: chainId,
-      },
-    };
-    await this.prismaService.liquidity.create({
-      data: liquidityData,
-    });
+    // liquidityData.pair = {
+    //   connect: {
+    //     address: tmpData["pairAddress"],
+    //     chainId: chainId,
+    //   },
+    // };
+    // console.log(liquidityData);
+    // await this.prismaService.liquidity.create({
+    //   data: liquidityData,
+    // });
   }
 
   async createClearPosition(chainId: number, { txHash }: { txHash: string }) {
@@ -302,6 +315,7 @@ export class DefuturesService {
       .then((block) => {
         return new Date(block.timestamp * 1000);
       });
+    console.log(receipt);
     const liquidityData = {
       createdAt: timestamp,
       txHash: txHash,
@@ -324,10 +338,12 @@ export class DefuturesService {
           data,
           topics,
         }).args;
+        console.log(decoded_log);
+        console.log(liquidityData);
         await this.prismaService.position.update({
           where: {
             positionId_defuturePairAddress: {
-              positionId: decoded_log.positionId,
+              positionId: BigNumber.from(decoded_log.positionId).toString(),
               defuturePairAddress: log.address,
             },
           },

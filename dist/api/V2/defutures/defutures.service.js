@@ -182,20 +182,15 @@ let DefuturesService = class DefuturesService {
             .then((block) => {
             return new Date(block.timestamp * 1000);
         });
-        const liquidityData = {
-            createdAt: timestamp,
-            txHash: txHash,
-            sender: receipt.from,
-            blockNumber: receipt.blockNumber,
-            event: client_1.LiquidityEvent.MINT,
-            receiver: "",
-            amountLp: "",
-            amount0: "",
-            amount1: "",
-            pair: {},
-        };
-        const tmpData = {};
+        const positions = [];
         receipt.logs.map(async (log) => {
+            const data = log.data;
+            const topics = log.topics;
+            const decoded_log = this.iface_uniswapv2defuturerouter.parseLog({
+                data,
+                topics,
+            }).args;
+            console.log(decoded_log);
             if (log.topics[0] === this.ADD_POSITION_SIGNATURE) {
                 const data = log.data;
                 const topics = log.topics;
@@ -203,55 +198,23 @@ let DefuturesService = class DefuturesService {
                     data,
                     topics,
                 }).args;
-                console.log(decoded_log);
-                await this.prismaService.position.create({
-                    data: {
-                        createdAt: timestamp,
-                        updatedAt: timestamp,
-                        owner: decoded_log.owner,
-                        positionId: decoded_log.positionId,
-                        positionType: decoded_log.positionType,
-                        margin: decoded_log.margin,
-                        strike: decoded_log.strike,
-                        future: decoded_log.future,
-                        defuturePair: {
-                            connect: {
-                                address: log.address,
-                            },
-                        },
-                    },
+                positions.push({
+                    createdAt: timestamp,
+                    updatedAt: timestamp,
+                    owner: decoded_log.owner,
+                    positionId: ethers_2.BigNumber.from(decoded_log.positionId).toString(),
+                    positionType: ethers_2.BigNumber.from(decoded_log.positionType).toString(),
+                    margin: ethers_2.BigNumber.from(decoded_log.margin).toString(),
+                    strike: ethers_2.BigNumber.from(decoded_log.strike).toString(),
+                    future: ethers_2.BigNumber.from(decoded_log.future).toString(),
+                    defuturePairAddress: log.address,
                 });
             }
-            else if (log.topics[0] === this.TRANSFER_SIGNATURE) {
-                const decoded_log = this.iface_erc20.parseLog({
-                    data: log.data,
-                    topics: log.topics,
-                }).args;
-                if (decoded_log.from === ethers_2.constants.HashZero) {
-                    liquidityData.receiver = decoded_log.to;
-                    liquidityData.amountLp = decoded_log.value;
-                }
+            if (positions.length > 0) {
+                await this.prismaService.position.createMany({
+                    data: positions,
+                });
             }
-            else if (log.topics[0] === this.MINT_SIGNATURE) {
-                const decoded_log = this.iface_uniswapv2pair.parseLog({
-                    data: log.data,
-                    topics: log.topics,
-                }).args;
-                liquidityData.amount0 = decoded_log.amount0;
-                liquidityData.amount1 = decoded_log.amount1;
-            }
-            else if (log.topics[0] === this.SWAP_SIGNATURE) {
-                tmpData["pairAddress"] = log.address;
-            }
-        });
-        liquidityData.pair = {
-            connect: {
-                address: tmpData["pairAddress"],
-                chainId: chainId,
-            },
-        };
-        await this.prismaService.liquidity.create({
-            data: liquidityData,
         });
     }
     async createClearPosition(chainId, { txHash }) {
@@ -266,6 +229,7 @@ let DefuturesService = class DefuturesService {
             .then((block) => {
             return new Date(block.timestamp * 1000);
         });
+        console.log(receipt);
         const liquidityData = {
             createdAt: timestamp,
             txHash: txHash,
@@ -288,10 +252,12 @@ let DefuturesService = class DefuturesService {
                     data,
                     topics,
                 }).args;
+                console.log(decoded_log);
+                console.log(liquidityData);
                 await this.prismaService.position.update({
                     where: {
                         positionId_defuturePairAddress: {
-                            positionId: decoded_log.positionId,
+                            positionId: ethers_2.BigNumber.from(decoded_log.positionId).toString(),
                             defuturePairAddress: log.address,
                         },
                     },

@@ -279,19 +279,6 @@
     "type": "event"
   },
   {
-    "inputs": [],
-    "name": "WETH",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -432,35 +419,6 @@
   {
     "inputs": [
       {
-        "internalType": "uint112",
-        "name": "amountIn",
-        "type": "uint112"
-      },
-      {
-        "internalType": "uint112",
-        "name": "reserveIn",
-        "type": "uint112"
-      },
-      {
-        "internalType": "uint112",
-        "name": "reserveOut",
-        "type": "uint112"
-      }
-    ],
-    "name": "getAmountOut",
-    "outputs": [
-      {
-        "internalType": "uint112",
-        "name": "amountOut",
-        "type": "uint112"
-      }
-    ],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
         "name": "tokenId",
         "type": "uint256"
@@ -519,35 +477,6 @@
         "internalType": "uint32",
         "name": "_timestampLastSync",
         "type": "uint32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint112",
-        "name": "_leadingBuy",
-        "type": "uint112"
-      },
-      {
-        "internalType": "uint112",
-        "name": "_leadingSell",
-        "type": "uint112"
-      },
-      {
-        "internalType": "uint112",
-        "name": "_amountBuy",
-        "type": "uint112"
-      }
-    ],
-    "name": "getStrikeAmount",
-    "outputs": [
-      {
-        "internalType": "uint112",
-        "name": "",
-        "type": "uint112"
       }
     ],
     "stateMutability": "view",

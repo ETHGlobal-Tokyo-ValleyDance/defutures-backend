@@ -22,7 +22,7 @@ let DefuturesController = class DefuturesController {
         this.defuturesService = defuturesService;
     }
     async test() {
-        return this.defuturesService.testDecodeEventLog();
+        return await this.defuturesService.testDecodeEventLog();
     }
     async createPosition(chainId, txHashPayload) {
         return await this.defuturesService.createPosition(chainId, txHashPayload);
@@ -41,7 +41,7 @@ let DefuturesController = class DefuturesController {
     }
 };
 __decorate([
-    (0, common_1.Post)(":chainId/test"),
+    (0, common_1.Post)("test"),
     (0, swagger_1.ApiOperation)({ summary: "Test" }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),

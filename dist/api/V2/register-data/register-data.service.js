@@ -19,14 +19,14 @@ let RegisterDataService = class RegisterDataService {
     async registerChainService(chainId, { name, symbol, rpcUrl, blockTime, factoryAddress, routerAddress, WETHAddress, }) {
         return await this.prismaService.chain.create({
             data: {
-                chainId,
-                name,
-                symbol,
-                rpcUrl,
-                blockTime,
-                factoryAddress,
-                routerAddress,
-                WETHAddress,
+                chainId: chainId,
+                name: name,
+                symbol: symbol,
+                rpcUrl: rpcUrl,
+                blockTime: blockTime,
+                factoryAddress: factoryAddress,
+                routerAddress: routerAddress,
+                WETHAddress: WETHAddress,
             },
         });
     }

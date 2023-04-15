@@ -5,19 +5,6 @@
         "type": "error"
     },
     {
-        "inputs": [],
-        "name": "WETH",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
         "inputs": [
             {
                 "internalType": "address",
@@ -148,6 +135,55 @@
         "type": "function"
     },
     {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "tokenA",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "tokenB",
+                "type": "address"
+            }
+        ],
+        "name": "getInfoForHedge",
+        "outputs": [
+            {
+                "internalType": "uint112",
+                "name": "reserve0",
+                "type": "uint112"
+            },
+            {
+                "internalType": "uint112",
+                "name": "reserve1",
+                "type": "uint112"
+            },
+            {
+                "internalType": "uint112",
+                "name": "leading0",
+                "type": "uint112"
+            },
+            {
+                "internalType": "uint112",
+                "name": "leading1",
+                "type": "uint112"
+            },
+            {
+                "internalType": "uint256",
+                "name": "minMarginBps",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "totalSupply",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
         "inputs": [],
         "name": "router",
         "outputs": [
@@ -159,9 +195,5 @@
         ],
         "stateMutability": "view",
         "type": "function"
-    },
-    {
-        "stateMutability": "payable",
-        "type": "receive"
     }
 ]

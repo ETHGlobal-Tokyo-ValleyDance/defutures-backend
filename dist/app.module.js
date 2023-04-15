@@ -11,11 +11,12 @@ const common_1 = require("@nestjs/common");
 const cache_manager_1 = require("@nestjs/cache-manager");
 const prisma_service_1 = require("./common/services/prisma.service");
 const defutures_module_1 = require("./api/V2/defutures/defutures.module");
+const register_data_module_1 = require("./api/V2/register-data/register-data.module");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [cache_manager_1.CacheModule.register(), defutures_module_1.DefuturesModule],
+        imports: [cache_manager_1.CacheModule.register(), defutures_module_1.DefuturesModule, register_data_module_1.RegisterDataModule],
         controllers: [],
         providers: [prisma_service_1.PrismaService],
     })

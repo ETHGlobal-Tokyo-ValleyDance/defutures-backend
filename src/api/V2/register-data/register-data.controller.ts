@@ -58,4 +58,6 @@ export class RegisterDataController {
       defuturePairInfoPayload
     );
   }
+
+  //   @Post(":chainId/postDefutureToken")
 }

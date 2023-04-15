@@ -11,7 +11,7 @@ datasource db {
 }
 
 model Chain {
-  id             String         @id @default(cuid()) @map("_id") @db.ObjectId
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
   chainId        Int
   name           String
   symbol         String
@@ -28,7 +28,7 @@ model Chain {
 }
 
 model Token {
-  id       String @id @default(cuid()) @map("_id") @db.ObjectId
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
   chainId  Int
   address  String
   name     String
@@ -47,7 +47,7 @@ model Token {
 }
 
 model Pair {
-  id      String @id @default(cuid()) @map("_id") @db.ObjectId
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
   address String
 
   token0Id String @db.ObjectId
@@ -67,7 +67,7 @@ model Pair {
 }
 
 model DefuturePair {
-  id      String @id @default(cuid()) @map("_id") @db.ObjectId
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
   address String
 
   token0Id String @db.ObjectId
@@ -85,7 +85,7 @@ model DefuturePair {
 }
 
 model Position {
-  id        String    @id @default(cuid()) @map("_id") @db.ObjectId
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
   createdAt DateTime
   updatedAt DateTime
   deletedAt DateTime?
@@ -107,7 +107,7 @@ model Position {
 }
 
 model Swap {
-  id          String   @id @default(cuid()) @map("_id") @db.ObjectId
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   createdAt   DateTime
   sender      String
   receiver    String
@@ -127,7 +127,7 @@ model Swap {
 }
 
 model Liquidity {
-  id          String         @id @default(cuid()) @map("_id") @db.ObjectId
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
   createdAt   DateTime
   txHash      String
   blockNumber Int
@@ -150,7 +150,7 @@ enum LiquidityEvent {
 }
 
 model AddMargin {
-  id          String   @id @default(cuid()) @map("_id") @db.ObjectId
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   createdAt   DateTime
   txHash      String
   blockNumber Int
